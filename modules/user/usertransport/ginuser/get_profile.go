@@ -11,6 +11,8 @@ import (
 func GetProfile(appCtx component.AppContext) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// type conversion to Requester, so no need to import user
+		// `CurrentUser`` is set when user login in `authorize` middleware
+		// `c.Set(common.CurrentUser, user)`
 		data := c.MustGet(common.CurrentUser).(common.Requester)
 
 		c.JSON(http.StatusOK, common.SimpleSuccessResponse(data))

@@ -3,7 +3,6 @@ package userbiz
 import (
 	"context"
 	"lift-tracker-api/common"
-	"lift-tracker-api/component"
 	"lift-tracker-api/component/tokenprovider"
 	"lift-tracker-api/modules/user/usermodel"
 )
@@ -13,7 +12,6 @@ type LoginStore interface {
 }
 
 type loginBiz struct {
-	appCtx        component.AppContext
 	loginStore    LoginStore
 	tokenProvider tokenprovider.Provider
 	hasher        Hasher
