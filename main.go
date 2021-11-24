@@ -5,6 +5,7 @@ import (
 	"lift-tracker-api/component/tokenprovider"
 	"lift-tracker-api/component/uploadprovider"
 	"lift-tracker-api/middleware"
+	"lift-tracker-api/modules/collection/collectiontransport/gincollection"
 	"lift-tracker-api/modules/user/usertransport/ginuser"
 	"log"
 	"net/http"
@@ -70,6 +71,8 @@ func runService(db *gorm.DB,
 	v1.POST("/register", ginuser.Register(appCtx))
 	v1.POST("/register/verify", ginuser.VerifyEmail(appCtx))
 	v1.GET("/profile", middleware.RequiredAuth(appCtx), ginuser.GetProfile(appCtx))
+
+	v1.POST("/collections", gincollection.CreateCollection(appCtx))
 
 	return r.Run()
 }
