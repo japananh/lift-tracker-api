@@ -1,6 +1,7 @@
 package main
 
 import (
+	"lift-tracker-api/common"
 	"lift-tracker-api/component"
 	"lift-tracker-api/component/tokenprovider"
 	"lift-tracker-api/component/uploadprovider"
@@ -73,6 +74,44 @@ func runService(db *gorm.DB,
 	v1.GET("/profile", middleware.RequiredAuth(appCtx), ginuser.GetProfile(appCtx))
 
 	v1.POST("/collections", gincollection.CreateCollection(appCtx))
+
+	// TODO: How to only show these API in development?
+	v1.GET("/encode-uid", func(c *gin.Context) {
+		type reqData struct {
+			DBType int `form:"db_type" binding:"required"`
+			RealId int `form:"id" binding:"required"`
+		}
+
+		var d reqData
+		if err := c.ShouldBind(&d); err != nil {
+			c.JSON(http.StatusBadRequest, "invalid request")
+		}
+
+		c.JSON(http.StatusOK, gin.H{
+			"id": common.NewUID(uint32(d.RealId), d.DBType, 1),
+		})
+	})
+
+	v1.GET("/decode-uid", func(c *gin.Context) {
+		type reqData struct {
+			FakeId string `form:"id" binding:"required"`
+		}
+
+		var d reqData
+		if err := c.ShouldBind(&d); err != nil {
+			c.JSON(http.StatusBadRequest, "invalid request")
+		}
+
+		realId, err := common.FromBase58(d.FakeId)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, "invalid request")
+		}
+
+		c.JSON(http.StatusOK, gin.H{
+			"id":      realId.GetLocalID(),
+			"db_type": realId.GetObjectType(),
+		})
+	})
 
 	return r.Run()
 }
