@@ -73,7 +73,11 @@ func runService(db *gorm.DB,
 	v1.POST("/register/verify", ginuser.VerifyEmail(appCtx))
 	v1.GET("/profile", middleware.RequiredAuth(appCtx), ginuser.GetProfile(appCtx))
 
-	v1.POST("/collections", gincollection.CreateCollection(appCtx))
+	v1.POST("/collections", middleware.RequiredAuth(appCtx), gincollection.CreateCollection(appCtx))
+	v1.GET("/collections/:id", middleware.RequiredAuth(appCtx), gincollection.GetCollection(appCtx))
+	v1.GET("/collections", middleware.RequiredAuth(appCtx), gincollection.ListCollection(appCtx))
+	v1.DELETE("/collections/delete", middleware.RequiredAuth(appCtx), gincollection.DeleteCollection(appCtx))
+	v1.PATCH("/collections/:id", middleware.RequiredAuth(appCtx), gincollection.UpdateCollection(appCtx))
 
 	// TODO: How to only show these API in development?
 	v1.GET("/encode-uid", func(c *gin.Context) {

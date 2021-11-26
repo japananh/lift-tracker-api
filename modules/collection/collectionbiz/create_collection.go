@@ -8,7 +8,11 @@ import (
 )
 
 type createCollectionStore interface {
-	FindCollection(ctx context.Context, conditions map[string]interface{}, moreInfo ...string) (*collectionmodel.Collection, error)
+	FindCollectionByCondition(
+		ctx context.Context,
+		conditions map[string]interface{},
+		moreKeys ...string,
+	) (*collectionmodel.Collection, error)
 	CreateCollection(ctx context.Context, data *collectionmodel.CollectionCreate) error
 }
 
@@ -25,9 +29,15 @@ func (biz *createCollectionBiz) CreateCollection(ctx context.Context, data *coll
 		return err
 	}
 
-	collection, err := biz.store.FindCollection(ctx, map[string]interface{}{"id": data.Id})
+	if data.ParentId > 0 {
+		_, err := biz.store.FindCollectionByCondition(ctx, map[string]interface{}{"id": data.ParentId})
+		if err != nil {
+			return common.ErrCannotCreateEntity(collectionmodel.EntityName, err)
+		}
+	}
 
-	if collection != nil {
+	duplicatedCollection, err := biz.store.FindCollectionByCondition(ctx, map[string]interface{}{"id": data.Id})
+	if duplicatedCollection != nil {
 		return common.ErrEntityExisted(usermodel.EntityName, err)
 	}
 

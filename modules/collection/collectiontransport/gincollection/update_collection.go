@@ -1,6 +1,7 @@
 package gincollection
 
 import (
+	"errors"
 	"lift-tracker-api/common"
 	"lift-tracker-api/component"
 	"lift-tracker-api/modules/collection/collectionbiz"
@@ -11,9 +12,13 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func CreateCollection(appCtx component.AppContext) gin.HandlerFunc {
+func UpdateCollection(appCtx component.AppContext) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		var data collectionmodel.CollectionCreate
+		uid, err := common.FromBase58(c.Param("id"))
+		if err != nil {
+			panic(common.ErrInvalidRequest(err))
+		}
+		var data collectionmodel.CollectionUpdate
 
 		if err := c.ShouldBind(&data); err != nil {
 			panic(common.ErrInvalidRequest(err))
@@ -23,16 +28,22 @@ func CreateCollection(appCtx component.AppContext) gin.HandlerFunc {
 			panic(common.ErrInvalidRequest(err))
 		}
 
+		if data.ParentId == int(uid.GetLocalID()) {
+			panic(common.ErrInvalidRequest(errors.New("invalid request")))
+		}
+		
 		db := appCtx.GetMainDBConnection()
 		store := collectionstorage.NewSQLStore(db)
-		biz := collectionbiz.NewCreateCollectionBiz(store)
+		biz := collectionbiz.NewUpdateCollectionBiz(store)
 
-		if err := biz.CreateCollection(c.Request.Context(), &data); err != nil {
+		if err := biz.UpdateCollection(
+			c.Request.Context(),
+			int(uid.GetLocalID()),
+			&data,
+		); err != nil {
 			panic(err)
 		}
 
-		data.Mask(false)
-
-		c.JSON(http.StatusOK, common.SimpleSuccessResponse(data.FakeId.String()))
+		c.JSON(http.StatusOK, common.SimpleSuccessResponse(true))
 	}
 }

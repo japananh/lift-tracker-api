@@ -8,20 +8,22 @@ import (
 	"gorm.io/gorm"
 )
 
-func (s *sqlStore) FindCollection(
+func (s *sqlStore) FindCollectionByCondition(
 	ctx context.Context,
 	conditions map[string]interface{},
-	moreInfo ...string,
+	moreKeys ...string,
 ) (*collectionmodel.Collection, error) {
-	db := s.db.Table(collectionmodel.Collection{}.TableName())
+	db := s.db
 
-	for i := range moreInfo {
-		db = db.Preload(moreInfo[i])
+	for i := range moreKeys {
+		db = db.Preload(moreKeys[i])
 	}
 
 	var collection collectionmodel.Collection
 
-	if err := db.Where(conditions).First(&collection).Error; err != nil {
+	if err := db.
+		Where(conditions).
+		First(&collection).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
 			return nil, common.ErrRecordNotFound
 		}
