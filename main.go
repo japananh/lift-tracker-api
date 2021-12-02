@@ -7,6 +7,7 @@ import (
 	"lift-tracker-api/component/uploadprovider"
 	"lift-tracker-api/middleware"
 	"lift-tracker-api/modules/collection/collectiontransport/gincollection"
+	"lift-tracker-api/modules/exercise/exercisetransport/ginexercise"
 	"lift-tracker-api/modules/user/usertransport/ginuser"
 	"log"
 	"net/http"
@@ -78,6 +79,12 @@ func runService(db *gorm.DB,
 	v1.GET("/collections", middleware.RequiredAuth(appCtx), gincollection.ListCollection(appCtx))
 	v1.DELETE("/collections/:id", middleware.RequiredAuth(appCtx), gincollection.DeleteCollection(appCtx))
 	v1.PATCH("/collections/:id", middleware.RequiredAuth(appCtx), gincollection.UpdateCollection(appCtx))
+
+	v1.POST("/exercises", middleware.RequiredAuth(appCtx), ginexercise.CreateExercise(appCtx))
+	v1.GET("/exercises/:id", middleware.RequiredAuth(appCtx), ginexercise.GetExercise(appCtx))
+	v1.GET("/exercises", middleware.RequiredAuth(appCtx), ginexercise.ListExercise(appCtx))
+	v1.DELETE("/exercises/:id", middleware.RequiredAuth(appCtx), ginexercise.DeleteExercise(appCtx))
+	v1.PATCH("/exercises/:id", middleware.RequiredAuth(appCtx), ginexercise.UpdateExercise(appCtx))
 
 	// TODO: How to only show these API in development?
 	v1.GET("/encode-uid", func(c *gin.Context) {
