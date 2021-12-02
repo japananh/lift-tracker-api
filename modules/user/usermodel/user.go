@@ -31,7 +31,6 @@ func ErrPasswordInvalid(msg string) *common.AppError {
 
 type User struct {
 	common.SQLModel `json:",inline"`
-	Status          int           `json:"status" gorm:"column:status;default:1;"`
 	Email           string        `json:"email" gorm:"column:email;"`
 	Password        string        `json:"-" gorm:"column:password;"`
 	Salt            string        `json:"-" gorm:"column:salt;"`
