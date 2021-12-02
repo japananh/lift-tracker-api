@@ -14,7 +14,8 @@ func (s *sqlStore) ListCollectionByCondition(
 	moreKeys ...string,
 ) ([]collectionmodel.Collection, error) {
 	db := s.db
-	db = db.Table(collectionmodel.Collection{}.TableName()).Where(conditions)
+	db = db.Table(collectionmodel.Collection{}.TableName()).
+		Where(conditions).Where("status in (1)")
 
 	if v := filter; v != nil {
 		if v.CreatedBy > 0 {
@@ -30,7 +31,7 @@ func (s *sqlStore) ListCollectionByCondition(
 	for i := range moreKeys {
 		db = db.Preload(moreKeys[i])
 
-		// if moreKeys[i] == "User" {
+		// if moreKeys[i] == "Collection" {
 		// do something (E.g. call api)
 		// }
 	}

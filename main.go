@@ -76,7 +76,7 @@ func runService(db *gorm.DB,
 	v1.POST("/collections", middleware.RequiredAuth(appCtx), gincollection.CreateCollection(appCtx))
 	v1.GET("/collections/:id", middleware.RequiredAuth(appCtx), gincollection.GetCollection(appCtx))
 	v1.GET("/collections", middleware.RequiredAuth(appCtx), gincollection.ListCollection(appCtx))
-	v1.DELETE("/collections/delete", middleware.RequiredAuth(appCtx), gincollection.DeleteCollection(appCtx))
+	v1.DELETE("/collections/:id", middleware.RequiredAuth(appCtx), gincollection.DeleteCollection(appCtx))
 	v1.PATCH("/collections/:id", middleware.RequiredAuth(appCtx), gincollection.UpdateCollection(appCtx))
 
 	// TODO: How to only show these API in development?

@@ -2,6 +2,7 @@ package collectionbiz
 
 import (
 	"context"
+	"lift-tracker-api/common"
 	"lift-tracker-api/modules/collection/collectionmodel"
 )
 
@@ -11,7 +12,7 @@ type DeleteRestaurantStore interface {
 		conditions map[string]interface{},
 		moreKeys ...string,
 	) (*collectionmodel.Collection, error)
-	Delete(ctx context.Context, ids []int) error
+	Delete(ctx context.Context, id int) error
 }
 
 type deleteCollectionBiz struct {
@@ -24,21 +25,20 @@ func NewDeleteCollectionBiz(store DeleteRestaurantStore) *deleteCollectionBiz {
 
 func (biz *deleteCollectionBiz) DeleteCollection(
 	ctx context.Context,
-	ids []int,
-) ([]int, error) {
-	var invalidIds []int
-
-	for _, id := range ids {
-		_, err := biz.store.FindCollectionByCondition(ctx, map[string]interface{}{"id": id})
-		if err != nil {
-			// return common.ErrCannotGetEntity(collectionmodel.EntityName, nil)
-			invalidIds = append(invalidIds, id)
-		}
+	id int,
+) error {
+	data, err := biz.store.FindCollectionByCondition(ctx, map[string]interface{}{"id": id})
+	if err != nil {
+		return common.ErrEntityNotFound(collectionmodel.EntityName, nil)
 	}
 
-	if err := biz.store.Delete(ctx, ids); err != nil {
-		return nil, err
+	if data.Status == 0 {
+		return common.ErrEntityDeleted(collectionmodel.EntityName, nil)
 	}
 
-	return invalidIds, nil
+	if err := biz.store.Delete(ctx, id); err != nil {
+		return err
+	}
+
+	return nil
 }
