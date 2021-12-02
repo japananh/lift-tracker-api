@@ -8,6 +8,7 @@ import (
 	"lift-tracker-api/middleware"
 	"lift-tracker-api/modules/collection/collectiontransport/gincollection"
 	"lift-tracker-api/modules/exercise/exercisetransport/ginexercise"
+	"lift-tracker-api/modules/measurement/measurementtransport/ginmeasurement"
 	"lift-tracker-api/modules/user/usertransport/ginuser"
 	"log"
 	"net/http"
@@ -86,6 +87,12 @@ func runService(db *gorm.DB,
 	v1.DELETE("/exercises/:id", middleware.RequiredAuth(appCtx), ginexercise.DeleteExercise(appCtx))
 	v1.PATCH("/exercises/:id", middleware.RequiredAuth(appCtx), ginexercise.UpdateExercise(appCtx))
 
+	v1.POST("/measurements", middleware.RequiredAuth(appCtx), ginmeasurement.CreateMeasurement(appCtx))
+	v1.GET("/measurements/:id", middleware.RequiredAuth(appCtx), ginmeasurement.GetMeasurement(appCtx))
+	v1.GET("/measurements", middleware.RequiredAuth(appCtx), ginmeasurement.ListMeasurement(appCtx))
+	v1.DELETE("/measurements/:id", middleware.RequiredAuth(appCtx), ginmeasurement.DeleteMeasurement(appCtx))
+	v1.PATCH("/measurements/:id", middleware.RequiredAuth(appCtx), ginmeasurement.UpdateMeasurement(appCtx))
+
 	// TODO: How to only show these API in development?
 	v1.GET("/encode-uid", func(c *gin.Context) {
 		type reqData struct {
@@ -96,6 +103,7 @@ func runService(db *gorm.DB,
 		var d reqData
 		if err := c.ShouldBind(&d); err != nil {
 			c.JSON(http.StatusBadRequest, "invalid request")
+			return
 		}
 
 		c.JSON(http.StatusOK, gin.H{
@@ -111,11 +119,13 @@ func runService(db *gorm.DB,
 		var d reqData
 		if err := c.ShouldBind(&d); err != nil {
 			c.JSON(http.StatusBadRequest, "invalid request")
+			return
 		}
 
 		realId, err := common.FromBase58(d.FakeId)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, "invalid request")
+			return
 		}
 
 		c.JSON(http.StatusOK, gin.H{
