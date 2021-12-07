@@ -75,23 +75,32 @@ func runService(db *gorm.DB,
 	v1.POST("/register/verify", ginuser.VerifyEmail(appCtx))
 	v1.GET("/profile", middleware.RequiredAuth(appCtx), ginuser.GetProfile(appCtx))
 
-	v1.POST("/collections", middleware.RequiredAuth(appCtx), gincollection.CreateCollection(appCtx))
-	v1.GET("/collections/:id", middleware.RequiredAuth(appCtx), gincollection.GetCollection(appCtx))
-	v1.GET("/collections", middleware.RequiredAuth(appCtx), gincollection.ListCollection(appCtx))
-	v1.DELETE("/collections/:id", middleware.RequiredAuth(appCtx), gincollection.DeleteCollection(appCtx))
-	v1.PATCH("/collections/:id", middleware.RequiredAuth(appCtx), gincollection.UpdateCollection(appCtx))
+	collections := v1.Group("/collections", middleware.RequiredAuth(appCtx))
+	{
+		collections.POST("/", gincollection.CreateCollection(appCtx))
+		collections.GET("/", gincollection.ListCollection(appCtx))
+		collections.GET("/:id", gincollection.GetCollection(appCtx))
+		collections.DELETE("/:id", gincollection.DeleteCollection(appCtx))
+		collections.PATCH("/:id", gincollection.UpdateCollection(appCtx))
+	}
 
-	v1.POST("/exercises", middleware.RequiredAuth(appCtx), ginexercise.CreateExercise(appCtx))
-	v1.GET("/exercises/:id", middleware.RequiredAuth(appCtx), ginexercise.GetExercise(appCtx))
-	v1.GET("/exercises", middleware.RequiredAuth(appCtx), ginexercise.ListExercise(appCtx))
-	v1.DELETE("/exercises/:id", middleware.RequiredAuth(appCtx), ginexercise.DeleteExercise(appCtx))
-	v1.PATCH("/exercises/:id", middleware.RequiredAuth(appCtx), ginexercise.UpdateExercise(appCtx))
+	exercises := v1.Group("/exercises", middleware.RequiredAuth(appCtx))
+	{
+		exercises.POST("/", ginexercise.CreateExercise(appCtx))
+		exercises.GET("/", ginexercise.ListExercise(appCtx))
+		exercises.GET("/:id", ginexercise.GetExercise(appCtx))
+		exercises.DELETE("/:id", ginexercise.DeleteExercise(appCtx))
+		exercises.PATCH("/:id", ginexercise.UpdateExercise(appCtx))
+	}
 
-	v1.POST("/measurements", middleware.RequiredAuth(appCtx), ginmeasurement.CreateMeasurement(appCtx))
-	v1.GET("/measurements/:id", middleware.RequiredAuth(appCtx), ginmeasurement.GetMeasurement(appCtx))
-	v1.GET("/measurements", middleware.RequiredAuth(appCtx), ginmeasurement.ListMeasurement(appCtx))
-	v1.DELETE("/measurements/:id", middleware.RequiredAuth(appCtx), ginmeasurement.DeleteMeasurement(appCtx))
-	v1.PATCH("/measurements/:id", middleware.RequiredAuth(appCtx), ginmeasurement.UpdateMeasurement(appCtx))
+	measurements := v1.Group("/measurements", middleware.RequiredAuth(appCtx))
+	{
+		measurements.POST("/", ginmeasurement.CreateMeasurement(appCtx))
+		measurements.GET("/", ginmeasurement.ListMeasurement(appCtx))
+		measurements.GET("/:id", ginmeasurement.GetMeasurement(appCtx))
+		measurements.DELETE("/:id", ginmeasurement.DeleteMeasurement(appCtx))
+		measurements.PATCH("/:id", ginmeasurement.UpdateMeasurement(appCtx))
+	}
 
 	// TODO: How to only show these API in development?
 	v1.GET("/encode-uid", func(c *gin.Context) {
