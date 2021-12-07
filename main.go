@@ -9,6 +9,7 @@ import (
 	"lift-tracker-api/modules/collection/collectiontransport/gincollection"
 	"lift-tracker-api/modules/exercise/exercisetransport/ginexercise"
 	"lift-tracker-api/modules/measurement/measurementtransport/ginmeasurement"
+	"lift-tracker-api/modules/upload/uploadtransport/ginupload"
 	"lift-tracker-api/modules/user/usertransport/ginuser"
 	"log"
 	"net/http"
@@ -74,6 +75,8 @@ func runService(db *gorm.DB,
 	v1.POST("/register", ginuser.Register(appCtx))
 	v1.POST("/register/verify", ginuser.VerifyEmail(appCtx))
 	v1.GET("/profile", middleware.RequiredAuth(appCtx), ginuser.GetProfile(appCtx))
+
+	v1.POST("/upload", middleware.RequiredAuth(appCtx), ginupload.Upload(appCtx))
 
 	collections := v1.Group("/collections", middleware.RequiredAuth(appCtx))
 	{
