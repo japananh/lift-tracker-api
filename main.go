@@ -9,6 +9,7 @@ import (
 	"lift-tracker-api/modules/collection/collectiontransport/gincollection"
 	"lift-tracker-api/modules/exercise/exercisetransport/ginexercise"
 	"lift-tracker-api/modules/measurement/measurementtransport/ginmeasurement"
+	"lift-tracker-api/modules/template/templatetransport/gintemplate"
 	"lift-tracker-api/modules/upload/uploadtransport/ginupload"
 	"lift-tracker-api/modules/user/usertransport/ginuser"
 	"log"
@@ -103,6 +104,15 @@ func runService(db *gorm.DB,
 		measurements.GET("/:id", ginmeasurement.GetMeasurement(appCtx))
 		measurements.DELETE("/:id", ginmeasurement.DeleteMeasurement(appCtx))
 		measurements.PATCH("/:id", ginmeasurement.UpdateMeasurement(appCtx))
+	}
+
+	templates := v1.Group("/templates", middleware.RequiredAuth(appCtx))
+	{
+		templates.POST("/", gintemplate.CreateTemplate(appCtx))
+		templates.GET("/", gintemplate.ListTemplate(appCtx))
+		templates.GET("/:id", gintemplate.GetTemplate(appCtx))
+		templates.DELETE("/:id", gintemplate.DeleteTemplate(appCtx))
+		templates.PATCH("/:id", gintemplate.UpdateTemplate(appCtx))
 	}
 
 	// TODO: How to only show these API in development?
