@@ -18,7 +18,7 @@ func (Measurement) TableName() string {
 }
 
 func (data *Measurement) Mask(isAdmin bool) {
-	data.GenUID(common.DbTypeCollection)
+	data.GenUID(common.DbTypeMeasurement)
 	fakeUserId := common.NewUID(uint32(data.UserId), common.DbTypeMeasurement, 1)
 	data.FakeUserId = &fakeUserId
 }

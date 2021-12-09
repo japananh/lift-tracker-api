@@ -31,7 +31,7 @@ func UpdateExercise(appCtx component.AppContext) gin.HandlerFunc {
 		store := exercisestorage.NewSQLStore(db)
 		biz := exercisebiz.NewUpdateExerciseBiz(store)
 
-		if err := biz.UpdateCollection(
+		if err := biz.UpdateExercise(
 			c.Request.Context(),
 			int(uid.GetLocalID()),
 			&data,

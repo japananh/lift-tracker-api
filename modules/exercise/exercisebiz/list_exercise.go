@@ -16,15 +16,15 @@ type ListExerciseStore interface {
 	) ([]exercisemodel.Exercise, error)
 }
 
-type ListCollectionBiz struct {
+type ListExerciseBiz struct {
 	store ListExerciseStore
 }
 
-func NewListExerciseBiz(store ListExerciseStore) *ListCollectionBiz {
-	return &ListCollectionBiz{store: store}
+func NewListExerciseBiz(store ListExerciseStore) *ListExerciseBiz {
+	return &ListExerciseBiz{store: store}
 }
 
-func (biz *ListCollectionBiz) ListExercise(
+func (biz *ListExerciseBiz) ListExercise(
 	ctx context.Context,
 	filter *exercisemodel.Filter,
 	paging *common.Paging,

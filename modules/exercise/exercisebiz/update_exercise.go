@@ -23,7 +23,7 @@ func NewUpdateExerciseBiz(store UpdateExerciseStore) *updateExerciseBiz {
 	return &updateExerciseBiz{store: store}
 }
 
-func (biz *updateExerciseBiz) UpdateCollection(
+func (biz *updateExerciseBiz) UpdateExercise(
 	ctx context.Context,
 	id int,
 	data *exercisemodel.ExerciseUpdate,
